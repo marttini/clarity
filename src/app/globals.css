@@ -76,59 +76,57 @@ a:hover {
   color: #ffffff;
 }
 
-@layer components {
-  .card {
-    @apply rounded-[18px] border border-line bg-surface;
-  }
-  .card-strong {
-    @apply rounded-[18px] border border-line-4 bg-surface-3;
-  }
-  .btn {
-    @apply inline-flex min-h-11 cursor-pointer items-center justify-center gap-2 rounded-xl px-4 font-bold transition-colors disabled:cursor-not-allowed disabled:opacity-50;
-  }
-  .btn-primary {
-    @apply btn bg-accent text-on-accent hover:bg-[#f48b5c];
-  }
-  .btn-ghost {
-    @apply btn border border-line-5 font-semibold text-[#e6d9f2] hover:bg-line;
-  }
-  .btn-quiet {
-    @apply btn min-h-9 px-2 font-semibold text-accent-soft hover:text-white;
-  }
-  .chip {
-    @apply inline-flex min-h-9 cursor-pointer items-center rounded-full border border-line-5 px-3 text-[13px] font-semibold text-[#e6d9f2];
-  }
-  .chip[aria-pressed="true"] {
+@utility card {
+  @apply rounded-[18px] border border-line bg-surface;
+}
+@utility card-strong {
+  @apply rounded-[18px] border border-line-4 bg-surface-3;
+}
+@utility btn {
+  @apply inline-flex min-h-11 cursor-pointer items-center justify-center gap-2 rounded-xl px-4 font-bold transition-colors disabled:cursor-not-allowed disabled:opacity-50;
+}
+@utility btn-primary {
+  @apply btn bg-accent text-on-accent hover:bg-[#f48b5c];
+}
+@utility btn-ghost {
+  @apply btn border border-line-5 font-semibold text-[#e6d9f2] hover:bg-line;
+}
+@utility btn-quiet {
+  @apply btn min-h-9 px-2 font-semibold text-accent-soft hover:text-white;
+}
+@utility chip {
+  @apply inline-flex min-h-9 cursor-pointer items-center rounded-full border border-line-5 px-3 text-[13px] font-semibold text-[#e6d9f2];
+  &[aria-pressed="true"] {
     @apply border-white bg-white text-on-accent;
   }
-  .field {
-    @apply min-h-11 w-full rounded-xl border border-line-5 bg-surface-2 px-3 text-ink placeholder:text-faint focus:border-accent focus:outline-none;
-  }
-  .label {
-    @apply text-[13px] font-semibold text-muted;
-  }
-  .num {
-    @apply font-mono;
-  }
-  .h1 {
-    @apply font-display text-[30px] font-semibold tracking-[-0.02em] text-white;
-  }
-  .h2 {
-    @apply font-display text-[22px] font-semibold text-white;
-  }
-  .h3 {
-    @apply text-[15px] font-bold text-white;
-  }
-  .table-wrap {
-    @apply overflow-x-auto rounded-2xl border border-line bg-surface p-1;
-  }
-  .tbl {
-    @apply w-full border-collapse text-sm;
-  }
-  .tbl th {
+}
+@utility field {
+  @apply min-h-11 w-full rounded-xl border border-line-5 bg-surface-2 px-3 text-ink placeholder:text-faint focus:border-accent focus:outline-none;
+}
+@utility label {
+  @apply text-[13px] font-semibold text-muted;
+}
+@utility num {
+  @apply font-mono;
+}
+@utility h1 {
+  @apply font-display text-[30px] font-semibold tracking-[-0.02em] text-white;
+}
+@utility h2 {
+  @apply font-display text-[22px] font-semibold text-white;
+}
+@utility h3 {
+  @apply text-[15px] font-bold text-white;
+}
+@utility table-wrap {
+  @apply overflow-x-auto rounded-2xl border border-line bg-surface p-1;
+}
+@utility tbl {
+  @apply w-full border-collapse text-sm;
+  & th {
     @apply px-3 py-3 text-left text-xs font-bold text-faint;
   }
-  .tbl td {
+  & td {
     @apply border-t border-line px-3 py-3 align-middle;
   }
 }

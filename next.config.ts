@@ -5,6 +5,11 @@ const nextConfig: NextConfig = {
   distDir: process.env.NEXT_DIST_DIR || ".next",
   serverExternalPackages: ["postgres"],
   experimental: { serverActions: { bodySizeLimit: "26mb" } },
+  turbopack: {
+    rules: {
+      "*.css": { loaders: ["@tailwindcss/turbopack"], as: "*.css" },
+    },
+  },
 };
 
 export default nextConfig;
