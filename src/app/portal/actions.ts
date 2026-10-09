@@ -19,8 +19,10 @@ export type ActionState = { ok: boolean; msg: string; key?: number } | null;
 
 function fail(e: unknown): ActionState {
   if (e instanceof PortalError) return { ok: false, msg: e.message, key: Date.now() };
+  // Erros de arquivo (tamanho, executável, vazio) são para o cliente; o resto pode ter detalhe interno.
+  if (e instanceof Error && /25 MB|execut|vazio/i.test(e.message)) return { ok: false, msg: e.message, key: Date.now() };
   console.error(e);
-  return { ok: false, msg: e instanceof Error && e.message ? e.message : "Não deu certo. Tente de novo em instantes.", key: Date.now() };
+  return { ok: false, msg: "Não deu certo. Tente de novo em instantes.", key: Date.now() };
 }
 
 const str = (f: FormData, k: string) => String(f.get(k) ?? "");

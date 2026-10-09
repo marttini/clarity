@@ -85,7 +85,7 @@ export function Segmented<T extends string>({ options, value, hrefFor }: { optio
           href={hrefFor(o.value)}
           scroll={false}
           className={cx(
-            "inline-flex min-h-[34px] items-center rounded-lg px-3 text-[13px] font-bold no-underline",
+            "inline-flex min-h-10 items-center rounded-lg px-3 text-[13px] font-bold no-underline",
             o.value === value ? "bg-line-2 text-white" : "text-muted hover:text-white",
           )}
         >

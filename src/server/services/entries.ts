@@ -231,6 +231,25 @@ export async function decideChange(me: TeamUser, requestId: string, approve: boo
   if (!cr || cr.status !== "pendente") throw new EntryError("Pedido não encontrado ou já decidido.");
   if (!approve && !reason?.trim()) throw new EntryError("Para recusar, informe o motivo.");
   const [person] = await db.select().from(s.people).where(eq(s.people.id, cr.personId));
+  // Confere de novo os valores pedidos: algo pode ter mudado desde o pedido (tarefa arquivada, tipo desativado...).
+  if (approve && cr.kind === "alterar" && person) {
+    const [cur] = await db.select().from(s.timeEntries).where(eq(s.timeEntries.id, cr.timeEntryId));
+    const nv = (cr.newValues ?? {}) as Partial<EntryInput>;
+    const v: EntryInput = {
+      itemId: nv.itemId ?? cur.itemId,
+      date: nv.date ?? cur.date,
+      minutes: nv.minutes ?? cur.minutes,
+      description: nv.description ?? cur.description,
+      typeId: nv.typeId ?? cur.typeId,
+      isSustentacao: nv.isSustentacao ?? cur.isSustentacao,
+      salesOrderLineId: nv.salesOrderLineId === undefined ? cur.salesOrderLineId : nv.salesOrderLineId,
+    };
+    try {
+      await check(person, v);
+    } catch (e) {
+      throw new EntryError("Não dá para aprovar: " + (e instanceof Error ? e.message : "os valores pedidos não são mais válidos.") + " Recuse com esse motivo.");
+    }
+  }
   await db.transaction(async (tx) => {
     await tx
       .update(s.changeRequests)

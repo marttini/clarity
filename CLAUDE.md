@@ -25,7 +25,7 @@ npm run dev            # http://localhost:3000 (login de teste em /entrar)
 npm run typecheck
 npm run lint
 npm test               # unitários + integração (precisa de Postgres local)
-npm run test:e2e       # Playwright
+npm run test:e2e       # Playwright: sobe next dev na porta 3300 (.next-e2e) e recria o banco clarity_e2e com o seed de 08/10/2026
 npm run db:generate    # gera migração a partir de src/db/schema.ts
 npm run db:migrate
 npm run db:seed        # dados fictícios (nunca em produção)

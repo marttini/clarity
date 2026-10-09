@@ -1,12 +1,14 @@
 import type { NextRequest } from "next/server";
 import { eq } from "drizzle-orm";
 import { db, schema as s } from "@/db";
-import { getSession } from "@/server/session";
+import { getSession, isManager } from "@/server/session";
+import { visibleItems } from "@/server/services/portal";
 import { getFile } from "@/server/storage";
 
 /**
  * Download de anexo (US-39, US-42).
- * Time: vê tudo. Contato do cliente: só anexo não interno de item visível do próprio cliente
+ * Time: vê tudo, exceto comprovante de justificativa de ausência, que só o próprio consultor e a gestão
+ * abrem (US-11). Contato do cliente: só anexo não interno de item visível do próprio cliente
  * (direto no item ou num comentário do canal Cliente). Comprovantes e justificativas nunca.
  */
 const INLINE = /^(image\/(png|jpe?g|gif|webp)|application\/pdf|text\/plain)$/;
@@ -20,12 +22,14 @@ async function clientCanSee(contactClientId: string, a: typeof s.attachments.$in
     if (!c || c.deletedAt || c.channel !== "cliente" || !c.itemId) return false;
     itemId = c.itemId;
   } else return false;
-  const [row] = await db
-    .select({ visible: s.items.visibleToClient, archived: s.items.archived, clientId: s.annualProjects.clientId })
-    .from(s.items)
-    .innerJoin(s.annualProjects, eq(s.annualProjects.id, s.items.annualProjectId))
-    .where(eq(s.items.id, itemId));
-  return !!row && row.visible && !row.archived && row.clientId === contactClientId;
+  // Mesma regra do portal: item visível, do próprio cliente, fora de rascunho (inclusive o projeto-pai).
+  return (await visibleItems({ clientId: contactClientId })).some((i) => i.id === itemId);
+}
+
+/** US-11: comprovante de ausência é do consultor; o resto do time vê só "dia justificado". */
+async function teamCanSee(me: { id: string } & Parameters<typeof isManager>[0], a: typeof s.attachments.$inferSelect) {
+  if (a.ownerType !== "justification") return true;
+  return isManager(me) || a.ownerId === me.id;
 }
 
 export async function GET(req: NextRequest, ctx: { params: Promise<{ id: string }> }) {
@@ -35,6 +39,9 @@ export async function GET(req: NextRequest, ctx: { params: Promise<{ id: string 
   if (!/^[0-9a-f-]{36}$/i.test(id)) return new Response("Anexo não encontrado.", { status: 404 });
   const [a] = await db.select().from(s.attachments).where(eq(s.attachments.id, id));
   if (!a) return new Response("Anexo não encontrado.", { status: 404 });
+  if (session.kind === "team" && !(await teamCanSee(session.person, a))) {
+    return new Response("Só o próprio consultor e a gestão veem o comprovante.", { status: 403 });
+  }
   if (session.kind === "client" && !(await clientCanSee(session.contact.clientId, a))) {
     // Não revela se o anexo existe.
     return new Response("Anexo não encontrado.", { status: 404 });

@@ -50,7 +50,7 @@ export default async function TeamLayout({ children }: { children: React.ReactNo
           <Link href={`/time/${me.id}`} className="no-underline" aria-label="Minha ficha">
             <Avatar name={me.name} initials={initials(me.name)} size={34} color="#A897F5" />
           </Link>
-          <Link href="/sair" className="btn-quiet text-sm text-muted" prefetch={false}>Sair</Link>
+          <form action="/sair" method="post"><button className="btn-quiet text-sm text-muted">Sair</button></form>
         </div>
       </header>
       <main className="flex flex-1 flex-col gap-8 px-[clamp(16px,3vw,32px)] pt-6 pb-12">{children}</main>

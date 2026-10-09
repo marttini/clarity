@@ -120,10 +120,13 @@ body {
 @utility h3 {
   @apply text-[15px] font-bold text-white;
 }
+/* relative: o texto sr-only (absolute) dos cabeçalhos fica preso na rolagem da tabela e não estica a página no celular. */
 @utility table-wrap {
+  position: relative;
   @apply overflow-x-auto rounded-2xl border border-line bg-surface p-1;
 }
 @utility tbl {
+  position: relative;
   @apply w-full border-collapse text-sm;
   & th {
     @apply px-3 py-3 text-left text-xs font-bold text-faint;

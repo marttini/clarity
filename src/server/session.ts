@@ -54,7 +54,7 @@ export const getSession = cache(async (): Promise<Session> => {
         .select({ c: s.clientContacts, clientName: s.clients.name })
         .from(s.clientContacts)
         .innerJoin(s.clients, eq(s.clients.id, s.clientContacts.clientId))
-        .where(and(eq(s.clientContacts.id, id), eq(s.clientContacts.portalAccess, true)));
+        .where(and(eq(s.clientContacts.id, id), eq(s.clientContacts.portalAccess, true), eq(s.clientContacts.active, true)));
       return rows[0] ? { kind: "client", contact: { ...rows[0].c, clientName: rows[0].clientName } } : null;
     }
     const [person] = await db.select().from(s.people).where(and(eq(s.people.id, v), eq(s.people.active, true)));

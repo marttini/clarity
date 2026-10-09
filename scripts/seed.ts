@@ -22,6 +22,9 @@ import { DEFAULT_SETTINGS } from "../src/domain/rules";
 const arg = process.argv.find((a) => a.startsWith("--today="));
 const TODAY: ISODate = arg ? arg.split("=")[1] : process.env.CLARITY_NOW ? toISODate(new Date(process.env.CLARITY_NOW)) : toISODate();
 const YEAR = Number(TODAY.slice(0, 4));
+// "Agora" dos dados: nenhum lançamento nasce depois dele (senão a janela de 48 h fica errada).
+const NOW = process.env.CLARITY_NOW ? new Date(process.env.CLARITY_NOW) : new Date(TODAY + "T16:00:00Z");
+const notAfterNow = (d: Date) => (d.getTime() > NOW.getTime() ? new Date(NOW.getTime() - 3_600_000) : d);
 
 // PRNG determinístico (mulberry32) para os números baterem entre execuções.
 function rng(seed: number) {
@@ -353,8 +356,8 @@ async function main() {
           isSustentacao: !!sp.sust,
           syncStatus: "enviado",
           odooLineId: 50000 + entries.length,
-          createdAt: new Date(d + "T21:00:00Z"),
-          updatedAt: new Date(d + "T21:00:00Z"),
+          createdAt: notAfterNow(new Date(d + "T21:00:00Z")),
+          updatedAt: notAfterNow(new Date(d + "T21:00:00Z")),
         });
         left -= chunk;
       }
@@ -368,15 +371,15 @@ async function main() {
           typeId: T.interno.id,
           syncStatus: "enviado",
           odooLineId: 50000 + entries.length,
-          createdAt: new Date(d + "T21:30:00Z"),
-          updatedAt: new Date(d + "T21:30:00Z"),
+          createdAt: notAfterNow(new Date(d + "T21:30:00Z")),
+          updatedAt: notAfterNow(new Date(d + "T21:30:00Z")),
         });
       }
     }
   }
   // Provisionamentos futuros e um a converter (hoje)
   entries.push(
-    { personId: PP.caio.id, itemId: IT["hdn-mrp-bom"].id, date: addDays(TODAY, 1), minutes: 240, description: "Visita técnica na fábrica", typeId: T.provisionamento.id, syncStatus: "enviado", odooLineId: 90001 },
+    { personId: PP.caio.id, itemId: IT["hdn-mrp-bom"].id, date: addDays(TODAY, 1), minutes: 240, description: "Visita técnica na fábrica", typeId: T.provisionamento.id, syncStatus: "enviado", odooLineId: 90001, createdAt: new Date(NOW.getTime() - 2 * 3_600_000) },
     { personId: PP.julia.id, itemId: IT["brava-crm-funil"].id, date: TODAY, minutes: 180, description: "Treinamento do funil com o time comercial", typeId: T.provisionamento.id, syncStatus: "enviado", odooLineId: 90002, createdAt: new Date(addDays(TODAY, -5) + "T12:00:00Z") },
   );
   // Uma entrada pendente de envio e uma com erro (para a tela de sincronização)
@@ -384,6 +387,10 @@ async function main() {
     { personId: PP.rafael.id, itemId: IT["radar-stone-ret"].id, date: TODAY, minutes: 60, description: "Leitura do arquivo de retorno", typeId: T.faturavel.id, syncStatus: "pendente" },
     { personId: PP.bruna.id, itemId: IT["lab-orc"].id, date: addDays(TODAY, -1), minutes: 90, description: "Modelo de orçamento: ajustes", typeId: T.faturavel.id, syncStatus: "erro", syncError: "O Odoo recusou: a tarefa está arquivada lá." },
   );
+  for (const e of entries) {
+    e.createdAt ??= new Date(NOW.getTime() - 30 * 60_000);
+    e.updatedAt ??= e.createdAt;
+  }
   for (let i = 0; i < entries.length; i += 1000) await db.insert(s.timeEntries).values(entries.slice(i, i + 1000));
 
   // Pedidos de alteração (Helena e Rafael) e um resolvido

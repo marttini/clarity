@@ -55,9 +55,7 @@ export default async function PortalLayout({ children }: { children: React.React
             <span role="img" aria-label={`${me.name}, ${me.clientName}`}>
               <Avatar name={me.name} initials={initials(me.name)} size={36} color={client?.color ?? "#F59A6B"} />
             </span>
-            <Link href="/sair" prefetch={false} className="btn-quiet text-sm text-muted">
-              Sair
-            </Link>
+            <form action="/sair" method="post"><button className="btn-quiet text-sm text-muted">Sair</button></form>
           </div>
         </div>
       </header>

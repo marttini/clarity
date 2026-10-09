@@ -17,7 +17,7 @@ export function MainNav({ items }: { items: NavItem[] }) {
             href={it.href}
             aria-current={active ? "page" : undefined}
             className={cx(
-              "inline-flex min-h-10 items-center rounded-lg px-3 text-sm no-underline",
+              "inline-flex min-h-11 items-center rounded-lg px-3 text-sm no-underline",
               active ? "bg-line font-semibold text-white" : "font-medium text-muted hover:text-white",
             )}
           >
