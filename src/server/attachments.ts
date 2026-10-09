@@ -4,6 +4,7 @@ import { randomUUID } from "node:crypto";
 import { db, schema as s } from "@/db";
 import { checkFile, putFile } from "./storage";
 import type { Tx } from "./audit";
+import { enqueueSync } from "./sync/enqueue";
 
 export type Uploader = { personId?: string; contactId?: string };
 
@@ -38,5 +39,7 @@ export async function saveAttachment(
       uploadedByContactId: by.contactId ?? null,
     })
     .returning();
+  // US-39: anexo de projeto ou tarefa também vai para o Odoo (exceto rascunho, tratado na fila).
+  if (owner.type === "item" && !opts.internal) await enqueueSync(tx, "attachment", row.id, "upsert");
   return row;
 }

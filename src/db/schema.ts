@@ -226,8 +226,9 @@ export const deadlineChanges = pgTable("deadline_changes", {
   itemId: uuid("item_id").notNull().references(() => items.id, { onDelete: "cascade" }),
   oldDeadline: date("old_deadline"),
   newDeadline: date("new_deadline").notNull(),
-  reason: text("reason").notNull(),
-  byPersonId: uuid("by_person_id").notNull().references(() => people.id),
+  reason: text("reason").notNull().default("Alterado no Odoo"),
+  /** Nulo quando a mudança veio do Odoo. */
+  byPersonId: uuid("by_person_id").references(() => people.id),
   at: createdAt(),
 });
 
