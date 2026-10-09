@@ -19,6 +19,7 @@ function fail(e: unknown): FormState {
 function done(message: string, clientId?: string): FormState {
   revalidatePath("/contatos");
   revalidatePath("/clientes");
+  revalidatePath("/fila");
   if (clientId) revalidatePath(`/clientes/${clientId}`);
   return { ok: true, message, at: Date.now() };
 }
