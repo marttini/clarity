@@ -17,7 +17,7 @@ export function checkFile(name: string, size: number): string | null {
   return null;
 }
 
-function useSupabase() {
+function supabaseConfigured() {
   return !!process.env.SUPABASE_SERVICE_ROLE_KEY && !!process.env.NEXT_PUBLIC_SUPABASE_URL;
 }
 
@@ -26,7 +26,7 @@ function admin() {
 }
 
 export async function putFile(key: string, data: Buffer, mime: string): Promise<string> {
-  if (useSupabase()) {
+  if (supabaseConfigured()) {
     const { error } = await admin().storage.from("anexos").upload(key, data, { contentType: mime, upsert: false });
     if (error) throw new Error("Falha ao guardar o arquivo: " + error.message);
     return key;
@@ -38,7 +38,7 @@ export async function putFile(key: string, data: Buffer, mime: string): Promise<
 }
 
 export async function getFile(key: string): Promise<Buffer> {
-  if (useSupabase()) {
+  if (supabaseConfigured()) {
     const { data, error } = await admin().storage.from("anexos").download(key);
     if (error || !data) throw new Error("Arquivo não encontrado.");
     return Buffer.from(await data.arrayBuffer());

@@ -1,4 +1,5 @@
 import "server-only";
+import { eq } from "drizzle-orm";
 import { db, schema as s } from "@/db";
 import { now } from "@/lib/clock";
 import { nextBusinessInstant } from "@/domain/rules";
@@ -52,6 +53,11 @@ export async function notify(
     urgent?: boolean;
   },
 ) {
+  // Lembrete já gerado hoje para a mesma pendência: não repete nem no sino.
+  if (ev.dedupeKey) {
+    const dup = await tx.select({ id: s.outbox.id }).from(s.outbox).where(eq(s.outbox.dedupeKey, ev.dedupeKey));
+    if (dup[0]) return null;
+  }
   const [n] = await tx
     .insert(s.notifications)
     .values({

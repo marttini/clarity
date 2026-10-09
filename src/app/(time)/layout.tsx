@@ -21,7 +21,7 @@ export default async function TeamLayout({ children }: { children: React.ReactNo
     { href: "/clientes", label: "Clientes" },
     { href: "/contatos", label: "Contatos" },
     { href: "/time", label: "Time" },
-    { href: "/gestao", label: "Gestão" },
+    ...(isManager(me) ? [{ href: "/gestao", label: "Gestão" }] : []),
     { href: "/ranking", label: "Ranking" },
     ...(isAdmin(me) ? [{ href: "/config", label: "Configurações" }] : []),
   ];

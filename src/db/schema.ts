@@ -12,7 +12,6 @@ import {
   boolean,
   timestamp,
   date,
-  numeric,
   jsonb,
   primaryKey,
   uniqueIndex,

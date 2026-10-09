@@ -69,11 +69,13 @@ body {
   outline-offset: 2px;
 }
 
-a {
-  color: #e6d9f2;
-}
-a:hover {
-  color: #ffffff;
+@layer base {
+  a {
+    color: #e6d9f2;
+  }
+  a:hover {
+    color: #ffffff;
+  }
 }
 
 @utility card {

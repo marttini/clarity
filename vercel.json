@@ -2,6 +2,7 @@
   "crons": [
     { "path": "/api/cron/sync", "schedule": "*/15 * * * *" },
     { "path": "/api/cron/avisos", "schedule": "*/10 * * * *" },
-    { "path": "/api/cron/diario", "schedule": "0 11 * * 1-5" }
+    { "path": "/api/cron/diario", "schedule": "0 11 * * 1-5" },
+    { "path": "/api/cron/diario?parte=fim-do-dia", "schedule": "0 20 * * 1-5" }
   ]
 }
